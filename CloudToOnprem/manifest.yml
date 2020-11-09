@@ -1,7 +1,7 @@
 ---
 applications:
-- name: onpremcall
-  command: node server.js
+- name: onpremcal
+  # command: node server.js
   memory: 128M
   buildpacks:
   - nodejs_buildpack

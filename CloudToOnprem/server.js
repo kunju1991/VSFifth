@@ -16,7 +16,7 @@ app.listen(process.env.PORT, function () {
 app.get('/callonprem', async function (req, res) {
     // call destination service
 	const destJwtToken = await _fetchJwtToken(destSrvCred.url, destSrvCred.clientid, destSrvCred.clientsecret)
-	const destiConfi = await _readDestinationConfig('scp', destSrvCred.uri, destJwtToken)
+	const destiConfi = await _readDestinationConfig('s14_sales_order', destSrvCred.uri, destJwtToken)
     queryParam = url.parse(req.url, true).query;
         
     // call onPrem system via connectivity service and Cloud Connector
@@ -106,7 +106,7 @@ const _callOnPrem = async function(connProxyHost, connProxyPort, connJwtToken, d
 app.get('/podetails', async function (req, res) {
     // call destination service
 	const destJwtToken = await _fetchJwtToken(destSrvCred.url, destSrvCred.clientid, destSrvCred.clientsecret)
-	const destiConfi = await _readDestinationConfig('scp-po', destSrvCred.uri, destJwtToken)
+	const destiConfi = await _readDestinationConfig('s14_purchase_order', destSrvCred.uri, destJwtToken)
     queryParam = url.parse(req.url, true).query;
         
     // call onPrem system via connectivity service and Cloud Connector
