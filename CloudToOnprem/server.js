@@ -112,6 +112,13 @@ app.get('/podetails', async function (req, res) {
     // call onPrem system via connectivity service and Cloud Connector
 	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
 	const result =  await _poDetails(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
+    
+    str = result.d.CreationDate;
+    res0 = str.split("(");
+    res1 = res0[1].split(")");   
+    res2 = new Date(parseInt(res1[0]));
+    result.d.CreationDate = res2;
+
     res.json(result)
 })
 
@@ -133,11 +140,49 @@ const _poDetails = async function(connProxyHost, connProxyPort, connJwtToken, de
             }              
         }
 		axios.get(targetUrl, config)
-        .then(response => {
+        .then((response) => {
            resolve(response.data)
-        })
-        .catch(error => {
-	      reject(error)
+        }, (error) => {
+	       reject(error)
         })
 	})    
 }
+
+// app.get('/sodetails', async function (req, res) {
+//     // call destination service
+// 	const destJwtToken = await _fetchJwtToken(destSrvCred.url, destSrvCred.clientid, destSrvCred.clientsecret)
+// 	const destiConfi = await _readDestinationConfig('s14_so_fe', destSrvCred.uri, destJwtToken)
+//     queryParam = url.parse(req.url, true).query;
+        
+//     // call onPrem system via connectivity service and Cloud Connector
+// 	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
+// 	const result =  await _poDetails(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
+//     res.json(result)
+// })
+
+// const _poDetails = async function(connProxyHost, connProxyPort, connJwtToken, destiConfi){
+//     return new Promise((resolve, reject) => {
+//         // console.log(q.number);
+//         const targetUrl = destiConfi.URL + "/C_PurchaseOrderTP(PurchaseOrder='" + queryParam.number + "',DraftUUID=guid'00000000-0000-0000-0000-000000000000',IsActiveEntity=true)"
+//         const encodedUser = Buffer.from(destiConfi.User + ':' + destiConfi.Password).toString("base64")
+    
+//         const config = {
+//             headers: {
+//                 Authorization: "Basic " + encodedUser,
+//                 'Proxy-Authorization': 'Bearer ' + connJwtToken,
+//                 'SAP-Connectivity-SCC-Location_ID': destiConfi.CloudConnectorLocationId        
+//             },
+//             proxy: {
+// 				host: connProxyHost, 
+// 				port: connProxyPort 
+//             }              
+//         }
+// 		axios.get(targetUrl, config)
+//         .then(response => {
+//            resolve(response.data)
+//         })
+//         .catch(error => {
+// 	      reject(error)
+//         })
+// 	})    
+// }
