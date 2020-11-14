@@ -21,22 +21,28 @@ app.get('/callonprem', async function (req, res) {
         
     // call onPrem system via connectivity service and Cloud Connector
 	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
-	const result =  await _callOnPrem(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
-    
-    str = result.d.vdatu;
-    res0 = str.split("(");
-    res1 = res0[1].split(")");   
-    res2 = new Date(parseInt(res1[0]));
-    result.d.vdatu = res2;
-    
-    str = result.d.erdat;
-    res0 = str.split("(");
-    res1 = res0[1].split(")");
-    res2 = new Date(parseInt(res1[0]));
-    result.d.erdat = res2;
+    try{
+        const result =  await _callOnPrem(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
+        
+        str = result.d.vdatu;
+        res0 = str.split("(");
+        res1 = res0[1].split(")");   
+        res2 = new Date(parseInt(res1[0]));
+        result.d.vdatu = res2;
+        
+        str = result.d.erdat;
+        res0 = str.split("(");
+        res1 = res0[1].split(")");
+        res2 = new Date(parseInt(res1[0]));
+        result.d.erdat = res2;
 
-    // console.log(result);
-    res.json(result);
+        // console.log(result);
+        res.json(result);
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+        res.json({"d":{"error": "error"}})
+    }
 })
 
 const _fetchJwtToken = async function(oauthUrl, oauthClient, oauthSecret) {
@@ -111,15 +117,21 @@ app.get('/podetails', async function (req, res) {
         
     // call onPrem system via connectivity service and Cloud Connector
 	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
-	const result =  await _poDetails(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
-    
-    str = result.d.CreationDate;
-    res0 = str.split("(");
-    res1 = res0[1].split(")");   
-    res2 = new Date(parseInt(res1[0]));
-    result.d.CreationDate = res2;
+    try{
+        const result =  await _poDetails(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
+        
+        str = result.d.CreationDate;
+        res0 = str.split("cf(");
+        res1 = res0[1].split(")");   
+        res2 = new Date(parseInt(res1[0]));
+        result.d.CreationDate = res2;
 
-    res.json(result)
+        res.json(result)
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+        res.json({"d":{"error": "error"}})
+    }
 })
 
 const _poDetails = async function(connProxyHost, connProxyPort, connJwtToken, destiConfi){
@@ -140,10 +152,11 @@ const _poDetails = async function(connProxyHost, connProxyPort, connJwtToken, de
             }              
         }
 		axios.get(targetUrl, config)
-        .then((response) => {
+        .then(response => {
            resolve(response.data)
-        }, (error) => {
-	       reject(error)
+        })
+        .catch(error => {
+	      reject(error)
         })
 	})    
 }
