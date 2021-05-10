@@ -1,0 +1,31 @@
+{
+  "name": "cmdfioriapp",
+  "version": "0.0.1",
+  "homepage": "",
+  "authors": [
+    "kunj"
+  ],
+  "description": "First VS app",
+  "main": "webapp/index.html",
+  "keywords": [
+    "openui5",
+    "sapui5",
+    "html5"
+  ],
+  "license": "MIT License",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "openui5-sap.ui.core": "^1.46.5",
+    "openui5-sap.m": "^1.46.5",
+    "openui5-sap.ui.layout": "^1.46.5",
+    "openui5-sap.ui.unified": "^1.46.5",
+    "openui5-themelib_sap_belize": "^1.46.5"
+  }
+}
