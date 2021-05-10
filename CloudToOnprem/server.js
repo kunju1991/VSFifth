@@ -297,6 +297,108 @@ const _poList = async function(connProxyHost, connProxyPort, connJwtToken, desti
 	})    
 }
 
+app.get('/prlist', async function (req, res) {
+    // call destination service
+	const destJwtToken = await _fetchJwtToken(destSrvCred.url, destSrvCred.clientid, destSrvCred.clientsecret)
+	const destiConfi = await _readDestinationConfig('s14_purchase_req', destSrvCred.uri, destJwtToken)
+    queryParam = url.parse(req.url, true).query;
+        
+    //call onPrem system via connectivity service and Cloud Connector
+	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
+    try{
+        const result =  await _prList(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)
+        
+//        str = result.d.CreationDate;
+//        res0 = str.split("cf(");
+//        res1 = res0[1].split(")");   
+//        res2 = new Date(parseInt(res1[0]));
+//        result.d.CreationDate = res2;
+
+        res.json(result)
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+        res.json({"d":{"error": "error"}})
+    }
+})
+
+const _prList = async function(connProxyHost, connProxyPort, connJwtToken, destiConfi){
+    return new Promise((resolve, reject) => {
+        // console.log(q.number);
+        const targetUrl = destiConfi.URL + "/C_PurchaseReqnHeader?sap-client=100&$skip=0&$top=25&$orderby=PurchaseRequisitionForEdit%20desc&$filter=IsActiveEntity%20eq%20false%20or%20SiblingEntity/IsActiveEntity%20eq%20null&$select=PurchaseRequisitionForEdit"
+        const encodedUser = Buffer.from(destiConfi.User + ':' + destiConfi.Password).toString("base64")
+    
+        const config = {
+            headers: {
+                Authorization: "Basic " + encodedUser,
+                'Proxy-Authorization': 'Bearer ' + connJwtToken,
+                'SAP-Connectivity-SCC-Location_ID': destiConfi.CloudConnectorLocationId        
+            },
+            proxy: {
+				host: connProxyHost, 
+				port: connProxyPort 
+            }              
+        }
+		axios.get(targetUrl, config)
+        .then(response => {
+           resolve(response.data)
+        })
+        .catch(error => {
+	      reject(error)
+        })
+	})
+}
+
+app.get('/solist', async function (req, res) {
+    // call destination service
+	const destJwtToken = await _fetchJwtToken(destSrvCred.url, destSrvCred.clientid, destSrvCred.clientsecret)
+	const destiConfi = await _readDestinationConfig('s14_sales_order', destSrvCred.uri, destJwtToken)
+    queryParam = url.parse(req.url, true).query;
+        
+    //call onPrem system via connectivity service and Cloud Connector
+	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
+    try{
+        const result =  await _soList(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)        
+//        str = result.d.CreationDate;
+//        res0 = str.split("cf(");
+//        res1 = res0[1].split(")");   
+//        res2 = new Date(parseInt(res1[0]));
+//        result.d.CreationDate = res2;
+
+        res.json(result)
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+        res.json({"d":{"error": "error"}})
+    }
+})
+
+const _soList = async function(connProxyHost, connProxyPort, connJwtToken, destiConfi){
+    return new Promise((resolve, reject) => {
+        // console.log(q.number);
+        const targetUrl = destiConfi.URL + "/zabibot01/?$select=vbeln"
+        const encodedUser = Buffer.from(destiConfi.User + ':' + destiConfi.Password).toString("base64")
+    
+        const config = {
+            headers: {
+                Authorization: "Basic " + encodedUser,
+                'Proxy-Authorization': 'Bearer ' + connJwtToken,
+                'SAP-Connectivity-SCC-Location_ID': destiConfi.CloudConnectorLocationId        
+            },
+            proxy: {
+				host: connProxyHost, 
+				port: connProxyPort 
+            }              
+        }
+		axios.get(targetUrl, config)
+        .then(response => {
+           resolve(response.data)
+        })
+        .catch(error => {
+	      reject(error)
+        })
+	})
+}
 
 // app.get('/sodetails', async function (req, res) {
 //     // call destination service
