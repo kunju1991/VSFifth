@@ -359,11 +359,6 @@ app.get('/solist', async function (req, res) {
 	const connJwtToken = await _fetchJwtToken(conSrvCred.token_service_url, conSrvCred.clientid, conSrvCred.clientsecret)
     try{
         const result =  await _soList(conSrvCred.onpremise_proxy_host, conSrvCred.onpremise_proxy_http_port, connJwtToken, destiConfi)        
-//        str = result.d.CreationDate;
-//        res0 = str.split("cf(");
-//        res1 = res0[1].split(")");   
-//        res2 = new Date(parseInt(res1[0]));
-//        result.d.CreationDate = res2;
 
         res.json(result)
     }
